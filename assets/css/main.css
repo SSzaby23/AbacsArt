@@ -1,3 +1,12 @@
+#main .thumb:nth-child(2) > .image {
+	background-position: center 20%;
+}
+#main .thumb:nth-child(3) > .image {
+	background-position: center 10%;
+}
+#main .thumb:nth-child(10) > .image {
+	background-position: center 20%;
+}
 @import url(fontawesome-all.min.css);
 @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic");
 
@@ -1054,8 +1063,8 @@ input, select, textarea {
 
 /* Panel */
 
-	.panel {
-		padding: 4em 4em 2em 4em ;
+	   .panel {
+		   padding: 1.5em 4em 1.5em 4em ;
 		-moz-transform: translateY(100vh);
 		-webkit-transform: translateY(100vh);
 		-ms-transform: translateY(100vh);
@@ -1162,14 +1171,14 @@ input, select, textarea {
 
 		@media screen and (max-width: 736px) {
 
-			.panel {
-				-moz-transform: translateY(-100vh);
-				-webkit-transform: translateY(-100vh);
-				-ms-transform: translateY(-100vh);
-				transform: translateY(-100vh);
-				padding: 4em 2em 2em 2em ;
-				bottom: auto;
-				top: calc(4em - 1px);
+			   .panel {
+				   -moz-transform: translateY(-100vh);
+				   -webkit-transform: translateY(-100vh);
+				   -ms-transform: translateY(-100vh);
+				   transform: translateY(-100vh);
+				   padding: 0.5em 2em 0.5em 2em ;
+				   bottom: auto;
+				   top: calc(4em - 1px);
 			}
 
 				.panel.active {
@@ -1470,8 +1479,8 @@ input, select, textarea {
 		-ms-user-select: none;
 		-webkit-user-select: none;
 		background: #1f2224;
-		bottom: -1em;
-		height: 5em;
+		top: 0;
+		height: 4em;
 		left: 0;
 		line-height: 4em;
 		padding: 0 1.5em;
@@ -1479,7 +1488,22 @@ input, select, textarea {
 		user-select: none;
 		width: 100%;
 		z-index: 10002;
-	}
+	   }
+
+	   /* Remove duplicate/conflicting #header rules below */
+
+	   /*
+	   #header {
+		   -moz-transform: translateY(0);
+		   -webkit-transform: translateY(0);
+		   -ms-transform: translateY(0);
+		   transform: translateY(0);
+		   bottom: auto;
+		   height: 4em;
+		   padding: 0 1em;
+		   top: 0;
+	   }
+	   */
 
 		body.is-preload #header {
 			-moz-transform: translateY(4em);
@@ -1491,8 +1515,9 @@ input, select, textarea {
 		#header h1 {
 			color: #a0a0a1;
 			display: inline-block;
-			font-size: 1em;
-			line-height: 1;
+			font-size: 1.5em;
+			font-weight: bold;
+			line-height: 1.2;
 			margin: 0;
 			vertical-align: middle;
 		}
@@ -2040,9 +2065,11 @@ input, select, textarea {
 
 /* Footer */
 
-	#footer .copyright {
-		color: #505051;
-		font-size: 0.9em;
+	   #footer .copyright {
+		   color: #505051;
+		   font-size: 0.9em;
+		   margin-bottom: 0;
+		   padding-bottom: 0;
 	}
 
 		#footer .copyright a {
