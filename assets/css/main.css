@@ -1,3 +1,64 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Petit+Formal+Script&display=swap');
+/* Ensure section titles are visible at top when using anchor links */
+#fafaragas, #faliorak, #intarziak, #cimerek, #kulcstartok {
+	scroll-margin-top: 2em;
+}
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic");
+@import url(fontawesome-all.min.css);
+
+/* Dropdown menu styles for header nav */
+.dropdown {
+	position: relative;
+}
+.dropdown-menu {
+	display: none;
+	position: absolute;
+	left: 0;
+	top: 100%;
+	background: #222;
+	min-width: 180px;
+	z-index: 1000;
+	border-radius: 0 0 0.5em 0.5em;
+	box-shadow: 0 0.5em 1em rgba(0,0,0,0.15);
+	padding: 0.5em 0;
+}
+.dropdown-menu li {
+	list-style: none;
+}
+.dropdown-menu a {
+	display: block;
+	color: #fff;
+	padding: 0.5em 1.5em 0.5em 1.5em;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background 0.2s;
+	width: 100%;
+	box-sizing: border-box;
+	text-align: left;
+}
+.dropdown-menu a:hover {
+	background: #444;
+}
+.dropdown:hover > .dropdown-menu {
+	display: block;
+}
+/* Gallery Section Titles Fix */
+#main > div[style*="font-size:2em"] {
+	flex-basis: 100%;
+	width: 100%;
+	text-align: center;
+	display: block;
+}
+
+
+footer .handwriting, .panel .handwriting, .handwriting {
+	font-family: 'Petit Formal Script', cursive !important;
+	font-weight: 800;
+	font-style: normal;
+	font-size: 1.5em;
+}
 #main .thumb:nth-child(2) > .image {
 	background-position: center 20%;
 }
@@ -1106,11 +1167,12 @@ input, select, textarea {
 
 				.panel > .inner.split > div {
 					margin-left: 4em;
-					width: 50%;
+					width: 70%;
 				}
 
 				.panel > .inner.split > :first-child {
 					margin-left: 0;
+					width: 30%;
 				}
 
 		.panel > .closer {
