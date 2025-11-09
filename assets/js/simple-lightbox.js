@@ -57,20 +57,20 @@
         this.container = createEl('div', {class: 'simple-lightbox-container'});
         this.img = createEl('img', {class: 'simple-lightbox-img', src: src, draggable: 'false'});
         // nav buttons
-        this.prevBtn = createEl('button', {class: 'simple-lightbox-prev', 'aria-label': 'Previous'});
-        this.prevBtn.innerText = '\u2039';
-        this.nextBtn = createEl('button', {class: 'simple-lightbox-next', 'aria-label': 'Next'});
-        this.nextBtn.innerText = '\u203A';
         this.closeBtn = createEl('button', {class: 'simple-lightbox-close', 'aria-label': 'Close'});
         this.closeBtn.textContent = '✕';
 
         this.container.appendChild(this.img);
+        // append control buttons inside the container so they position relative to image
+        this.prevBtn = createEl('button', {class: 'simple-lightbox-prev', 'aria-label': 'Previous'});
+        this.prevBtn.innerText = '\u2039';
+        this.nextBtn = createEl('button', {class: 'simple-lightbox-next', 'aria-label': 'Next'});
+        this.nextBtn.innerText = '\u203A';
+        this.container.appendChild(this.prevBtn);
+        this.container.appendChild(this.nextBtn);
         this.overlay.appendChild(this.container);
         this.overlay.appendChild(this.closeBtn);
     document.body.appendChild(this.overlay);
-    // append nav buttons to body so they float above
-    document.body.appendChild(this.prevBtn);
-    document.body.appendChild(this.nextBtn);
         document.body.classList.add('simple-lightbox-open');
 
         // reset transform state; wait for image load to ensure dimensions are correct

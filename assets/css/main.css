@@ -2219,16 +2219,17 @@ body.poptrox-zoomed #wrapper:after {
 
 .simple-lightbox-prev,
 .simple-lightbox-next {
+	/* Default (desktop): fixed and vertically centered */
 	position: fixed;
 	top: 50%;
 	transform: translateY(-50%);
 	background: rgba(0,0,0,0.35);
 	color: #fff;
 	border: none;
-	width: 3.2rem;
-	height: 3.2rem;
-	font-size: 2rem;
-	line-height: 3.2rem;
+	width: 2.6rem; /* slightly smaller on desktop */
+	height: 2.6rem;
+	font-size: 1.6rem;
+	line-height: 2.6rem;
 	text-align: center;
 	border-radius: 0.35rem;
 	cursor: pointer;
@@ -2236,4 +2237,22 @@ body.poptrox-zoomed #wrapper:after {
 }
 .simple-lightbox-prev { left: 1rem; }
 .simple-lightbox-next { right: 1rem; }
+
+/* Mobile: place the nav buttons at the bottom of the container and make them smaller */
+@media (max-width: 736px) {
+	.simple-lightbox-prev,
+	.simple-lightbox-next {
+		position: absolute; /* relative to .simple-lightbox-container */
+		bottom: 0.6rem;
+		transform: none;
+		width: 2.2rem;
+		height: 2.2rem;
+		font-size: 1.2rem;
+		line-height: 2.2rem;
+		background: rgba(0,0,0,0.5);
+		opacity: 0.95;
+	}
+	.simple-lightbox-prev { left: 0.6rem; }
+	.simple-lightbox-next { right: 0.6rem; }
+}
 
