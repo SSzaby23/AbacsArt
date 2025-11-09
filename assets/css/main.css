@@ -2238,21 +2238,24 @@ body.poptrox-zoomed #wrapper:after {
 .simple-lightbox-prev { left: 1rem; }
 .simple-lightbox-next { right: 1rem; }
 
-/* Mobile: place the nav buttons at the bottom of the container and make them smaller */
-@media (max-width: 736px) {
+/* Mobile / touch: place the nav buttons at the bottom of the container and make them smaller.
+   Use pointer:coarse (touch) where available, and fall back to a wider max-width to catch mobile viewports. */
+@media (pointer: coarse), (max-width: 900px) {
 	.simple-lightbox-prev,
 	.simple-lightbox-next {
-		position: absolute; /* relative to .simple-lightbox-container */
-		bottom: 0.6rem;
-		transform: none;
-		width: 2.2rem;
-		height: 2.2rem;
-		font-size: 1.2rem;
-		line-height: 2.2rem;
-		background: rgba(0,0,0,0.5);
-		opacity: 0.95;
+		position: absolute !important; /* relative to .simple-lightbox-container */
+		bottom: 0.6rem !important;
+		transform: none !important;
+		width: 2.2rem !important;
+		height: 2.2rem !important;
+		font-size: 1.2rem !important;
+		line-height: 2.2rem !important;
+		background: rgba(0,0,0,0.5) !important;
+		opacity: 0.95 !important;
 	}
-	.simple-lightbox-prev { left: 0.6rem; }
-	.simple-lightbox-next { right: 0.6rem; }
+	.simple-lightbox-prev { left: 0.6rem !important; }
+	.simple-lightbox-next { right: 0.6rem !important; }
+	/* Ensure the container is the positioning context (should already be), and allow buttons to overlay content */
+	.simple-lightbox-container { position: relative; }
 }
 
