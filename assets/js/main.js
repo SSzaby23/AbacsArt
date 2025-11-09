@@ -269,6 +269,214 @@
 				windowMargin: 50
 			});
 
+		// Image zoom (wheel on desktop, pinch on mobile) inside poptrox popup
+		;(function(){
+			var SCALE_MIN = 1,
+				SCALE_MAX = 4;
+
+			// Helpers
+			function dist(t1, t2){
+				var dx = t1.pageX - t2.pageX;
+				var dy = t1.pageY - t2.pageY;
+				return Math.sqrt(dx*dx + dy*dy);
+			}
+
+			// When popup opens, attach handlers to the popup element (delegated)
+			$(document).on('poptrox_open', '.poptrox-popup', function(e, idx){
+				var $popup = $(this);
+				var $pic = $popup.find('.pic');
+				var $img = $pic.find('img');
+				var scale = 1;
+				var startDist = 0, startScale = 1;
+
+				// Ensure image can be transformed
+				$img.css({
+					'transform-origin': '50% 50%',
+					'transition': 'transform 0.05s linear',
+					'-webkit-transition': 'transform 0.05s linear',
+					'max-width': 'none'
+				});
+
+				// Wheel to zoom (desktop)
+				$popup.on('wheel.zoom', '.pic', function(ev){
+					ev.preventDefault();
+					ev.stopPropagation();
+					var oe = ev.originalEvent;
+					var delta = oe.deltaY;
+					var factor = delta > 0 ? 0.9 : 1.1;
+					scale = Math.max(SCALE_MIN, Math.min(SCALE_MAX, scale * factor));
+
+					// set transform-origin to mouse position so zoom centers under cursor
+					var off = $img.offset();
+					var iw = $img.width();
+					var ih = $img.height();
+					if (iw > 0 && ih > 0) {
+						var px = ((oe.pageX - off.left) / iw) * 100;
+						var py = ((oe.pageY - off.top) / ih) * 100;
+						$img.css('transform-origin', px + '% ' + py + '%');
+					}
+					$img.css('transform', 'scale(' + scale + ')');
+				});
+
+				// Touch pinch to zoom (mobile)
+				$popup.on('touchstart.zoom', '.pic', function(ev){
+					var t = ev.originalEvent.touches;
+					if (t && t.length === 2) {
+						startDist = dist(t[0], t[1]);
+						startScale = scale || 1;
+						// midpoint for transform-origin
+						var midX = (t[0].pageX + t[1].pageX) / 2;
+						var midY = (t[0].pageY + t[1].pageY) / 2;
+						var off = $img.offset();
+						var iw = $img.width();
+						var ih = $img.height();
+						if (iw > 0 && ih > 0) {
+							var px = ((midX - off.left) / iw) * 100;
+							var py = ((midY - off.top) / ih) * 100;
+							$img.css('transform-origin', px + '% ' + py + '%');
+						}
+					}
+				});
+
+				$popup.on('touchmove.zoom', '.pic', function(ev){
+					var t = ev.originalEvent.touches;
+					if (t && t.length === 2) {
+						ev.preventDefault();
+						ev.stopPropagation();
+						var d = dist(t[0], t[1]);
+						if (startDist > 0) {
+							scale = startScale * (d / startDist);
+							scale = Math.max(SCALE_MIN, Math.min(SCALE_MAX, scale));
+							$img.css('transform', 'scale(' + scale + ')');
+						}
+					}
+				});
+
+				// Reset on close
+				$popup.on('poptrox_close.zoom', function(){
+					$popup.off('.zoom');
+					$img.css({'transform': '', 'transform-origin': '', 'transition': ''});
+					scale = 1; startDist = 0; startScale = 1;
+				});
+			});
+		})();
+
+		// Drag-to-pan when zoomed (mouse drag or single-finger touch)
+		;(function(){
+			$(document).on('poptrox_open', '.poptrox-popup', function(e, idx){
+				var $popup = $(this);
+				var $pic = $popup.find('.pic');
+				var $img = $pic.find('img');
+				if ($img.length === 0) return;
+
+				var scale = 1, translateX = 0, translateY = 0;
+				var dragging = false, startX = 0, startY = 0, startTX = 0, startTY = 0;
+
+				function applyTransform(){
+					$img.css('transform', 'translate(' + translateX + 'px,' + translateY + 'px) scale(' + scale + ')');
+				}
+
+				function clampTranslate(tx, ty){
+					// Basic clamping so image cannot be dragged too far beyond the container
+					var picW = $pic.width(), picH = $pic.height();
+					var imgW = $img.width() * scale, imgH = $img.height() * scale;
+					var maxX = Math.max(0, (imgW - picW) / 2);
+					var maxY = Math.max(0, (imgH - picH) / 2);
+					if (isFinite(maxX)) tx = Math.max(-maxX, Math.min(maxX, tx));
+					if (isFinite(maxY)) ty = Math.max(-maxY, Math.min(maxY, ty));
+					return [tx, ty];
+				}
+
+				// Update scale when wheel/pinch handlers change it elsewhere
+				// Observe transform changes by wrapping applyTransform usage in other code paths
+				// For safety, check existing transform when opening popup
+				var existingTransform = $img.css('transform');
+				if (existingTransform && existingTransform !== 'none'){
+					// try to parse scale from matrix
+					var m = existingTransform.match(/matrix\(([^)]+)\)/);
+					if(m){
+						var parts = m[1].split(',');
+						if(parts.length>=1){
+							// a = scaleX, d = scaleY
+							var a = parseFloat(parts[0]);
+							scale = isFinite(a) ? a : 1;
+						}
+					}
+				}
+
+				// Mouse drag
+				$popup.on('mousedown.zoompan', '.pic', function(ev){
+					if (scale <= 1) return;
+					ev.preventDefault();
+					dragging = true;
+					startX = ev.pageX; startY = ev.pageY;
+					startTX = translateX; startTY = translateY;
+					$popup.css('cursor','grabbing');
+					$(document).on('mousemove.zoompan', function(e){
+						if (!dragging) return;
+						var dx = e.pageX - startX, dy = e.pageY - startY;
+						var ntx = startTX + dx, nty = startTY + dy;
+						var cl = clampTranslate(ntx, nty);
+						translateX = cl[0]; translateY = cl[1];
+						applyTransform();
+					});
+					$(document).on('mouseup.zoompan', function(){
+						dragging = false;
+						$(document).off('.zoompan');
+						$popup.css('cursor','');
+					});
+				});
+
+				// Touch drag (single-finger)
+				$popup.on('touchstart.zoompan', '.pic', function(ev){
+					var t = ev.originalEvent.touches;
+					if (!t || t.length !== 1) return; // ignore multi-touch here
+					if (scale <= 1) return;
+					var touch = t[0];
+					dragging = true;
+					startX = touch.pageX; startY = touch.pageY;
+					startTX = translateX; startTY = translateY;
+					$(document).on('touchmove.zoompan', function(e){
+						var tt = e.originalEvent.touches;
+						if (!dragging || !tt || tt.length !== 1) return;
+						e.preventDefault();
+						var t0 = tt[0];
+						var dx = t0.pageX - startX, dy = t0.pageY - startY;
+						var ntx = startTX + dx, nty = startTY + dy;
+						var cl = clampTranslate(ntx, nty);
+						translateX = cl[0]; translateY = cl[1];
+						applyTransform();
+					});
+					$(document).on('touchend.zoompan touchcancel.zoompan', function(){
+						dragging = false;
+						$(document).off('.zoompan');
+					});
+				});
+
+				// Listen for zoom changes from existing wheel/pinch code and update local scale
+				$popup.on('wheel.zoom', '.pic', function(){
+					// try to extract scale from computed transform
+					var t = $img.css('transform');
+					if (t && t !== 'none'){
+						var m = t.match(/matrix\(([^)]+)\)/);
+						if (m){
+							var parts = m[1].split(',');
+							if (parts.length>=1){
+								scale = parseFloat(parts[0]) || scale;
+							}
+						}
+					}
+				});
+
+				// Reset translations on popup close
+				$popup.on('poptrox_close.zoompan', function(){
+					$popup.off('.zoompan');
+					translateX = 0; translateY = 0; scale = 1;
+					$img.css({'transform': '', 'transform-origin': '', 'transition': ''});
+				});
+			});
+		})();
+
 			// Hack: Set margins to 0 when 'xsmall' activates.
 				breakpoints.on('<=xsmall', function() {
 					$main[0]._poptrox.windowMargin = 0;
