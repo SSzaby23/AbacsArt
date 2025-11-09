@@ -2259,3 +2259,19 @@ body.poptrox-zoomed #wrapper:after {
 	.simple-lightbox-container { position: relative; }
 }
 
+/* Also support JS-detected touch/narrow via a body class for devices/emulators that don't match media queries */
+body.simple-lightbox-touch .simple-lightbox-prev,
+body.simple-lightbox-touch .simple-lightbox-next {
+	position: absolute !important;
+	bottom: 0.6rem !important;
+	transform: none !important;
+	width: 2.2rem !important;
+	height: 2.2rem !important;
+	font-size: 1.2rem !important;
+	line-height: 2.2rem !important;
+	background: rgba(0,0,0,0.5) !important;
+	opacity: 0.95 !important;
+}
+body.simple-lightbox-touch .simple-lightbox-prev { left: 0.6rem !important; }
+body.simple-lightbox-touch .simple-lightbox-next { right: 0.6rem !important; }
+

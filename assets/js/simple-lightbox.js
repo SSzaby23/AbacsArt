@@ -71,7 +71,75 @@
         this.overlay.appendChild(this.container);
         this.overlay.appendChild(this.closeBtn);
     document.body.appendChild(this.overlay);
+        // mark body as open; also add a touch/narrow flag so CSS can adapt reliably
         document.body.classList.add('simple-lightbox-open');
+        try{
+            var isTouch = (('ontouchstart' in window) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 0));
+            var isNarrow = (window.innerWidth && window.innerWidth <= 900);
+            if (isTouch || isNarrow) document.body.classList.add('simple-lightbox-touch');
+        }catch(e){}
+
+        // Ensure container is a positioning context
+        try{ this.container.style.position = this.container.style.position || 'relative'; }catch(e){}
+
+        // Helper to update layout depending on narrow/touch viewport. Use both overlay class and inline important styles
+        var self = this;
+        this._updateLayout = function(){
+            try{
+                var narrow = (window.innerWidth && window.innerWidth <= 900);
+                var touch = (('ontouchstart' in window) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 0));
+                var mobile = narrow || touch;
+                if (mobile) {
+                    try{ self.overlay.classList.add('simple-lightbox-mobile'); }catch(e){}
+                    // set inline styles with !important to be robust
+                    try{
+                        self.prevBtn.style.setProperty('position', 'absolute', 'important');
+                        self.prevBtn.style.setProperty('bottom', '0.6rem', 'important');
+                        self.prevBtn.style.setProperty('left', '0.6rem', 'important');
+                        self.prevBtn.style.setProperty('transform', 'none', 'important');
+                        self.prevBtn.style.setProperty('width', '2.2rem', 'important');
+                        self.prevBtn.style.setProperty('height', '2.2rem', 'important');
+                        self.prevBtn.style.setProperty('font-size', '1.2rem', 'important');
+                        self.prevBtn.style.setProperty('line-height', '2.2rem', 'important');
+
+                        self.nextBtn.style.setProperty('position', 'absolute', 'important');
+                        self.nextBtn.style.setProperty('bottom', '0.6rem', 'important');
+                        self.nextBtn.style.setProperty('right', '0.6rem', 'important');
+                        self.nextBtn.style.setProperty('transform', 'none', 'important');
+                        self.nextBtn.style.setProperty('width', '2.2rem', 'important');
+                        self.nextBtn.style.setProperty('height', '2.2rem', 'important');
+                        self.nextBtn.style.setProperty('font-size', '1.2rem', 'important');
+                        self.nextBtn.style.setProperty('line-height', '2.2rem', 'important');
+                    }catch(e){}
+                } else {
+                    try{ self.overlay.classList.remove('simple-lightbox-mobile'); }catch(e){}
+                    try{
+                        self.prevBtn.style.setProperty('position', 'fixed', 'important');
+                        self.prevBtn.style.setProperty('top', '50%', 'important');
+                        self.prevBtn.style.setProperty('left', '1rem', 'important');
+                        self.prevBtn.style.setProperty('transform', 'translateY(-50%)', 'important');
+                        self.prevBtn.style.setProperty('width', '2.6rem', 'important');
+                        self.prevBtn.style.setProperty('height', '2.6rem', 'important');
+                        self.prevBtn.style.setProperty('font-size', '1.6rem', 'important');
+                        self.prevBtn.style.setProperty('line-height', '2.6rem', 'important');
+
+                        self.nextBtn.style.setProperty('position', 'fixed', 'important');
+                        self.nextBtn.style.setProperty('top', '50%', 'important');
+                        self.nextBtn.style.setProperty('right', '1rem', 'important');
+                        self.nextBtn.style.setProperty('transform', 'translateY(-50%)', 'important');
+                        self.nextBtn.style.setProperty('width', '2.6rem', 'important');
+                        self.nextBtn.style.setProperty('height', '2.6rem', 'important');
+                        self.nextBtn.style.setProperty('font-size', '1.6rem', 'important');
+                        self.nextBtn.style.setProperty('line-height', '2.6rem', 'important');
+                    }catch(e){}
+                }
+            }catch(e){}
+        };
+
+        // Run once and listen for resize while lightbox is open
+        try{ this._updateLayout(); }catch(e){}
+        this._onResize = function(){ try{ self._updateLayout(); }catch(e){} };
+        window.addEventListener('resize', this._onResize);
 
         // reset transform state; wait for image load to ensure dimensions are correct
         var self = this;
@@ -132,6 +200,7 @@
             try{ if (this.prevBtn) { this.prevBtn.remove(); this.prevBtn = null; } }catch(e){}
             try{ if (this.nextBtn) { this.nextBtn.remove(); this.nextBtn = null; } }catch(e){}
             document.body.classList.remove('simple-lightbox-open');
+            try{ document.body.classList.remove('simple-lightbox-touch'); }catch(e){}
             document.removeEventListener('mousemove', this.onMove);
             document.removeEventListener('mouseup', this.onUp);
             document.removeEventListener('keydown', this.onKey);
