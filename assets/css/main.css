@@ -1395,6 +1395,34 @@ input, select, textarea {
 			opacity: 0;
 		}
 
+/* When image is zoomed, hide decorative overlay and nav controls to avoid obstructing the image */
+.poptrox-popup.zoomed:before {
+	opacity: 0 !important;
+	pointer-events: none !important;
+}
+.poptrox-popup.zoomed .nav-previous,
+.poptrox-popup.zoomed .nav-next,
+.poptrox-popup.zoomed .closer,
+.poptrox-popup.zoomed .caption {
+	display: none !important;
+}
+
+/* Bring the image container above the decorative overlay when zoomed so it receives pointer events */
+.poptrox-popup.zoomed .pic {
+	position: relative;
+	z-index: 3;
+}
+
+.poptrox-popup.zoomed .pic img {
+	cursor: grab;
+}
+
+/* Hide the dim/blur behind the page while zooming so the zoomed image isn't obstructed */
+body.poptrox-zoomed #wrapper:after {
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
 		body.touch .poptrox-popup .closer,
 		body.touch .poptrox-popup .nav-previous,
 		body.touch .poptrox-popup .nav-next {
@@ -2137,3 +2165,75 @@ input, select, textarea {
 		#footer .copyright a {
 			color: inherit;
 		}
+
+/* Simple Lightbox styles */
+.simple-lightbox-overlay {
+	position: fixed;
+	left: 0; top: 0; right: 0; bottom: 0;
+	background: rgba(0,0,0,0.95);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 2147483650;
+}
+.simple-lightbox-container {
+	position: relative;
+	width: 90vw;
+	height: 90vh;
+	max-width: 1200px;
+	max-height: 900px;
+	overflow: hidden;
+	touch-action: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+}
+.simple-lightbox-img {
+	display: block;
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	transform-origin: 50% 50%;
+	transition: transform 0.05s linear;
+	-webkit-user-drag: none;
+	user-select: none;
+	margin: 0 auto;
+}
+.simple-lightbox-close {
+	position: fixed;
+	right: 1rem;
+	top: 1rem;
+	z-index: 2147483651;
+	background: rgba(0,0,0,0.4);
+	color: #fff;
+	border: none;
+	padding: 6px 10px;
+	font-size: 18px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+.simple-lightbox-open { overflow: hidden; }
+
+.simple-lightbox-prev,
+.simple-lightbox-next {
+	position: fixed;
+	top: 50%;
+	transform: translateY(-50%);
+	background: rgba(0,0,0,0.35);
+	color: #fff;
+	border: none;
+	width: 3.2rem;
+	height: 3.2rem;
+	font-size: 2rem;
+	line-height: 3.2rem;
+	text-align: center;
+	border-radius: 0.35rem;
+	cursor: pointer;
+	z-index: 2147483652;
+}
+.simple-lightbox-prev { left: 1rem; }
+.simple-lightbox-next { right: 1rem; }
+
